@@ -158,10 +158,32 @@ export const NewReportScreen: React.FC<Props> = ({ navigation }) => {
   };
 
   const submitReport = async () => {
-    if (!photoUri || !category || !location || !user) return;
+    console.log('submitReport called', { photoUri: !!photoUri, category, location: !!location, user: !!user, isGuest });
+
+    if (!photoUri || !category || !location) {
+      console.error('Missing required fields');
+      Alert.alert('Error', 'Faltan campos requeridos');
+      setLoading(false);
+      return;
+    }
+
+    if (!user && !isGuest) {
+      console.error('No user and not guest');
+      Alert.alert('Error', 'Debes iniciar sesión para crear reportes');
+      setLoading(false);
+      return;
+    }
 
     try {
-      const reportId = await createReport(
+      console.log('Creating report...');
+
+      // Generate userId and name based on whether user is guest or authenticated
+      const userId = user?.uid || 'guest-' + Date.now();
+      const userName = user?.displayName || 'Usuario anónimo';
+
+      console.log('User info:', { userId, userName, isGuest });
+
+      await createReport(
         {
           category,
           location: {
@@ -172,10 +194,12 @@ export const NewReportScreen: React.FC<Props> = ({ navigation }) => {
           description,
           address,
         },
-        user.uid,
-        user.displayName || 'Usuario',
+        userId,
+        userName,
         isGuest
       );
+
+      console.log('Report created successfully');
 
       Alert.alert('¡Éxito!', 'Tu reporte ha sido creado', [
         {
@@ -184,6 +208,7 @@ export const NewReportScreen: React.FC<Props> = ({ navigation }) => {
         },
       ]);
     } catch (error: any) {
+      console.error('Error creating report:', error);
       Alert.alert('Error', error.message || 'No se pudo crear el reporte');
     } finally {
       setLoading(false);

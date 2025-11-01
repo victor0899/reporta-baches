@@ -47,17 +47,19 @@ export const checkForDuplicates = async (
   try {
     // Query reports in the same category
     const reportsRef = collection(db, 'reports');
-    const q = query(
-      reportsRef,
-      where('category', '==', category),
-      where('status', '!=', 'resolved')
-    );
+    const q = query(reportsRef, where('category', '==', category));
 
     const querySnapshot = await getDocs(q);
     const nearbyReports: Report[] = [];
 
     querySnapshot.forEach((doc) => {
       const report = { id: doc.id, ...doc.data() } as Report;
+
+      // Skip resolved reports (filter in client to avoid composite index)
+      if (report.status === 'resolved') {
+        return;
+      }
+
       const distance = calculateDistance(location, report.location);
 
       if (distance <= radiusMeters) {
