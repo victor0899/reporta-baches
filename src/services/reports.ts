@@ -248,3 +248,34 @@ export const markReportResolved = async (
     throw new Error('No se pudo marcar el reporte como resuelto');
   }
 };
+
+/**
+ * Get reports by their IDs
+ */
+export const getReportsByIds = async (reportIds: string[]): Promise<Report[]> => {
+  try {
+    if (!reportIds || reportIds.length === 0) {
+      return [];
+    }
+
+    const reports: Report[] = [];
+
+    // Firestore 'in' query has a limit of 30 items, so we need to batch
+    const batchSize = 30;
+    for (let i = 0; i < reportIds.length; i += batchSize) {
+      const batch = reportIds.slice(i, i + batchSize);
+      const reportsRef = collection(db, 'reports');
+      const q = query(reportsRef, where('__name__', 'in', batch));
+      const querySnapshot = await getDocs(q);
+
+      querySnapshot.forEach((doc) => {
+        reports.push({ id: doc.id, ...doc.data() } as Report);
+      });
+    }
+
+    return reports;
+  } catch (error) {
+    console.error('Error getting reports by IDs:', error);
+    return [];
+  }
+};
