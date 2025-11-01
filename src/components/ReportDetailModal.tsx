@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -8,9 +8,14 @@ import {
   Image,
   ScrollView,
   Dimensions,
+  Alert,
+  ActivityIndicator,
 } from 'react-native';
+import * as ImagePicker from 'expo-image-picker';
 import { Report } from '../types';
 import { getCategoryById } from '../constants';
+import { useAuth } from '../contexts';
+import { confirmReport } from '../services/reports';
 
 interface Props {
   report: Report | null;
@@ -21,10 +26,89 @@ interface Props {
 const { width } = Dimensions.get('window');
 
 export const ReportDetailModal: React.FC<Props> = ({ report, visible, onClose }) => {
+  const { user, isGuest } = useAuth();
+  const [loading, setLoading] = useState(false);
+
   if (!report) return null;
 
   const category = getCategoryById(report.category);
   const createdDate = report.createdAt?.toDate?.();
+
+  const handleConfirm = async () => {
+    // Check if user is logged in
+    if (!user && !isGuest) {
+      Alert.alert('Error', 'Debes iniciar sesión para confirmar reportes');
+      return;
+    }
+
+    // Ask if user wants to add a photo
+    Alert.alert(
+      'Confirmar Reporte',
+      '¿Quieres agregar una foto actualizada del problema?',
+      [
+        {
+          text: 'Sin Foto',
+          onPress: () => submitConfirmation(),
+        },
+        {
+          text: 'Agregar Foto',
+          onPress: () => handleAddPhoto(),
+        },
+        {
+          text: 'Cancelar',
+          style: 'cancel',
+        },
+      ]
+    );
+  };
+
+  const handleAddPhoto = async () => {
+    const { status } = await ImagePicker.requestCameraPermissionsAsync();
+
+    if (status !== 'granted') {
+      Alert.alert(
+        'Permiso denegado',
+        'Se necesita acceso a la cámara para tomar fotos'
+      );
+      return;
+    }
+
+    const result = await ImagePicker.launchCameraAsync({
+      mediaTypes: ['images'],
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 0.8,
+    });
+
+    if (!result.canceled && result.assets[0]) {
+      submitConfirmation(result.assets[0].uri);
+    }
+  };
+
+  const submitConfirmation = async (photoUri?: string) => {
+    if (!report) return;
+
+    setLoading(true);
+
+    try {
+      const userId = user?.uid || 'guest-' + Date.now();
+      const userName = user?.displayName || 'Usuario anónimo';
+
+      await confirmReport(report.id, userId, userName, photoUri);
+
+      Alert.alert('¡Éxito!', 'Tu confirmación ha sido registrada', [
+        {
+          text: 'OK',
+          onPress: () => onClose(),
+        },
+      ]);
+    } catch (error: any) {
+      console.error('Error confirming report:', error);
+      Alert.alert('Error', error.message || 'No se pudo confirmar el reporte');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <Modal visible={visible} animationType="slide" transparent>
@@ -114,15 +198,53 @@ export const ReportDetailModal: React.FC<Props> = ({ report, visible, onClose })
                   <Text style={styles.description}>{report.address}</Text>
                 </View>
               )}
+
+              {/* Confirmations List */}
+              {report.confirmations && report.confirmations.length > 0 && (
+                <View style={styles.section}>
+                  <Text style={styles.label}>
+                    Usuarios que confirmaron ({report.confirmations.length}):
+                  </Text>
+                  {report.confirmations.map((confirmation, index) => (
+                    <View key={index} style={styles.confirmationItem}>
+                      <View style={styles.confirmationHeader}>
+                        <Text style={styles.confirmationName}>
+                          {confirmation.userName}
+                        </Text>
+                        <Text style={styles.confirmationDate}>
+                          {confirmation.timestamp?.toDate?.()?.toLocaleDateString('es-SV', {
+                            month: 'short',
+                            day: 'numeric',
+                          })}
+                        </Text>
+                      </View>
+                      {confirmation.photoUrl && (
+                        <Image
+                          source={{ uri: confirmation.photoUrl }}
+                          style={styles.confirmationPhoto}
+                        />
+                      )}
+                    </View>
+                  ))}
+                </View>
+              )}
             </View>
           </ScrollView>
 
           {/* Action Button */}
           <View style={styles.footer}>
-            <TouchableOpacity style={styles.actionButton}>
-              <Text style={styles.actionButtonText}>
-                Confirmar que sigue aquí
-              </Text>
+            <TouchableOpacity
+              style={[styles.actionButton, loading && styles.actionButtonDisabled]}
+              onPress={handleConfirm}
+              disabled={loading}
+            >
+              {loading ? (
+                <ActivityIndicator color="#fff" />
+              ) : (
+                <Text style={styles.actionButtonText}>
+                  Confirmar que sigue aquí
+                </Text>
+              )}
             </TouchableOpacity>
           </View>
         </View>
@@ -230,6 +352,33 @@ const styles = StyleSheet.create({
     marginTop: 8,
     lineHeight: 20,
   },
+  confirmationItem: {
+    marginTop: 12,
+    padding: 12,
+    backgroundColor: '#f8f8f8',
+    borderRadius: 8,
+  },
+  confirmationHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  confirmationName: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#333',
+  },
+  confirmationDate: {
+    fontSize: 12,
+    color: '#666',
+  },
+  confirmationPhoto: {
+    width: '100%',
+    height: 150,
+    borderRadius: 8,
+    marginTop: 8,
+    backgroundColor: '#e0e0e0',
+  },
   footer: {
     padding: 16,
     borderTopWidth: 1,
@@ -240,6 +389,9 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
     borderRadius: 12,
     alignItems: 'center',
+  },
+  actionButtonDisabled: {
+    opacity: 0.6,
   },
   actionButtonText: {
     color: '#fff',
