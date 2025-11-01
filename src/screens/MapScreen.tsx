@@ -7,17 +7,21 @@ import {
   TouchableOpacity,
   Text,
 } from 'react-native';
-import MapView, { PROVIDER_GOOGLE, Region } from 'react-native-maps';
+import MapView, { PROVIDER_GOOGLE, Region, Marker } from 'react-native-maps';
 import * as Location from 'expo-location';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { MainStackParamList } from '../types/navigation';
-import { DEFAULT_LOCATION } from '../constants';
+import { DEFAULT_LOCATION, getCategoryById } from '../constants';
+import { useReports } from '../hooks/useReports';
+import { ReportDetailModal } from '../components/ReportDetailModal';
+import { Report } from '../types';
 
 type NavigationProp = NativeStackNavigationProp<MainStackParamList>;
 
 export const MapScreen: React.FC = () => {
   const navigation = useNavigation<NavigationProp>();
+  const { reports, loading: reportsLoading } = useReports();
   const [region, setRegion] = useState<Region>({
     latitude: DEFAULT_LOCATION.latitude,
     longitude: DEFAULT_LOCATION.longitude,
@@ -29,6 +33,18 @@ export const MapScreen: React.FC = () => {
   );
   const [loading, setLoading] = useState(true);
   const [hasLocationPermission, setHasLocationPermission] = useState(false);
+  const [selectedReport, setSelectedReport] = useState<Report | null>(null);
+  const [modalVisible, setModalVisible] = useState(false);
+
+  const handleMarkerPress = (report: Report) => {
+    setSelectedReport(report);
+    setModalVisible(true);
+  };
+
+  const handleCloseModal = () => {
+    setModalVisible(false);
+    setSelectedReport(null);
+  };
 
   useEffect(() => {
     requestLocationPermission();
@@ -110,7 +126,26 @@ export const MapScreen: React.FC = () => {
         showsUserLocation={hasLocationPermission}
         showsMyLocationButton={false}
       >
-        {/* TODO: Add report markers here */}
+        {/* Report Markers */}
+        {reports.map((report) => {
+          const category = getCategoryById(report.category);
+          return (
+            <Marker
+              key={report.id}
+              coordinate={{
+                latitude: report.location.latitude,
+                longitude: report.location.longitude,
+              }}
+              title={category?.name}
+              description={report.description || 'Sin descripción'}
+              onPress={() => handleMarkerPress(report)}
+            >
+              <View style={styles.markerContainer}>
+                <Text style={styles.markerEmoji}>{category?.icon}</Text>
+              </View>
+            </Marker>
+          );
+        })}
       </MapView>
 
       {/* Recenter button */}
@@ -130,6 +165,13 @@ export const MapScreen: React.FC = () => {
       >
         <Text style={styles.newReportButtonText}>+ Nuevo Reporte</Text>
       </TouchableOpacity>
+
+      {/* Report Detail Modal */}
+      <ReportDetailModal
+        report={selectedReport}
+        visible={modalVisible}
+        onClose={handleCloseModal}
+      />
     </View>
   );
 };
@@ -190,5 +232,20 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 18,
     fontWeight: '600',
+  },
+  markerContainer: {
+    backgroundColor: '#fff',
+    padding: 6,
+    borderRadius: 20,
+    borderWidth: 2,
+    borderColor: '#007AFF',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  markerEmoji: {
+    fontSize: 20,
   },
 });
