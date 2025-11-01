@@ -15,7 +15,7 @@ import * as ImagePicker from 'expo-image-picker';
 import { Report } from '../types';
 import { getCategoryById } from '../constants';
 import { useAuth } from '../contexts';
-import { confirmReport } from '../services/reports';
+import { confirmReport, markReportResolved } from '../services/reports';
 
 interface Props {
   report: Report | null;
@@ -105,6 +105,82 @@ export const ReportDetailModal: React.FC<Props> = ({ report, visible, onClose })
     } catch (error: any) {
       console.error('Error confirming report:', error);
       Alert.alert('Error', error.message || 'No se pudo confirmar el reporte');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleResolve = async () => {
+    // Only registered users can resolve reports
+    if (!user || isGuest) {
+      Alert.alert(
+        'Acción no permitida',
+        'Solo usuarios registrados pueden marcar reportes como resueltos'
+      );
+      return;
+    }
+
+    Alert.alert(
+      'Marcar como Resuelto',
+      'Debes tomar una foto que demuestre que el problema fue solucionado.',
+      [
+        {
+          text: 'Tomar Foto',
+          onPress: () => handleResolutionPhoto(),
+        },
+        {
+          text: 'Cancelar',
+          style: 'cancel',
+        },
+      ]
+    );
+  };
+
+  const handleResolutionPhoto = async () => {
+    const { status } = await ImagePicker.requestCameraPermissionsAsync();
+
+    if (status !== 'granted') {
+      Alert.alert(
+        'Permiso denegado',
+        'Se necesita acceso a la cámara para tomar fotos'
+      );
+      return;
+    }
+
+    const result = await ImagePicker.launchCameraAsync({
+      mediaTypes: ['images'],
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 0.8,
+    });
+
+    if (!result.canceled && result.assets[0]) {
+      submitResolution(result.assets[0].uri);
+    }
+  };
+
+  const submitResolution = async (photoUri: string) => {
+    if (!report || !user) return;
+
+    setLoading(true);
+
+    try {
+      await markReportResolved(
+        report.id,
+        user.uid,
+        user.displayName || 'Usuario',
+        photoUri
+      );
+
+      Alert.alert('¡Éxito!', 'El reporte ha sido marcado como resuelto', [
+        {
+          text: 'OK',
+          onPress: () => onClose(),
+        },
+      ]);
+    } catch (error: any) {
+      console.error('Error resolving report:', error);
+      Alert.alert('Error', error.message || 'No se pudo marcar el reporte como resuelto');
     } finally {
       setLoading(false);
     }
@@ -228,25 +304,86 @@ export const ReportDetailModal: React.FC<Props> = ({ report, visible, onClose })
                   ))}
                 </View>
               )}
+
+              {/* Resolution Evidence */}
+              {report.status === 'resolved' && report.resolutionEvidence && (
+                <View style={styles.section}>
+                  <View style={styles.resolvedBanner}>
+                    <Text style={styles.resolvedBannerText}>
+                      ✓ Problema Resuelto
+                    </Text>
+                  </View>
+                  <View style={styles.resolutionInfo}>
+                    <Text style={styles.label}>Resuelto por:</Text>
+                    <Text style={styles.value}>
+                      {report.resolutionEvidence.resolvedBy.userName}
+                    </Text>
+                  </View>
+                  {report.resolvedAt && (
+                    <View style={styles.resolutionInfo}>
+                      <Text style={styles.label}>Fecha de resolución:</Text>
+                      <Text style={styles.value}>
+                        {report.resolvedAt.toDate?.()?.toLocaleDateString('es-SV', {
+                          year: 'numeric',
+                          month: 'long',
+                          day: 'numeric',
+                        })}
+                      </Text>
+                    </View>
+                  )}
+                  {report.resolutionEvidence.photoUrl && (
+                    <View style={styles.resolutionPhotoContainer}>
+                      <Text style={styles.label}>Evidencia de resolución:</Text>
+                      <Image
+                        source={{ uri: report.resolutionEvidence.photoUrl }}
+                        style={styles.resolutionPhoto}
+                      />
+                    </View>
+                  )}
+                </View>
+              )}
             </View>
           </ScrollView>
 
-          {/* Action Button */}
-          <View style={styles.footer}>
-            <TouchableOpacity
-              style={[styles.actionButton, loading && styles.actionButtonDisabled]}
-              onPress={handleConfirm}
-              disabled={loading}
-            >
-              {loading ? (
-                <ActivityIndicator color="#fff" />
-              ) : (
-                <Text style={styles.actionButtonText}>
-                  Confirmar que sigue aquí
-                </Text>
+          {/* Action Buttons */}
+          {report.status !== 'resolved' && (
+            <View style={styles.footer}>
+              <TouchableOpacity
+                style={[styles.actionButton, loading && styles.actionButtonDisabled]}
+                onPress={handleConfirm}
+                disabled={loading}
+              >
+                {loading ? (
+                  <ActivityIndicator color="#fff" />
+                ) : (
+                  <Text style={styles.actionButtonText}>
+                    Confirmar que sigue aquí
+                  </Text>
+                )}
+              </TouchableOpacity>
+
+              {/* Mark as Resolved button - only for registered users */}
+              {user && !isGuest && (
+                <TouchableOpacity
+                  style={[
+                    styles.actionButton,
+                    styles.resolveButton,
+                    loading && styles.actionButtonDisabled,
+                  ]}
+                  onPress={handleResolve}
+                  disabled={loading}
+                >
+                  {loading ? (
+                    <ActivityIndicator color="#fff" />
+                  ) : (
+                    <Text style={styles.actionButtonText}>
+                      Marcar como Resuelto
+                    </Text>
+                  )}
+                </TouchableOpacity>
               )}
-            </TouchableOpacity>
-          </View>
+            </View>
+          )}
         </View>
       </View>
     </Modal>
@@ -379,6 +516,34 @@ const styles = StyleSheet.create({
     marginTop: 8,
     backgroundColor: '#e0e0e0',
   },
+  resolvedBanner: {
+    backgroundColor: '#34C759',
+    padding: 16,
+    borderRadius: 12,
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  resolvedBannerText: {
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: '700',
+  },
+  resolutionInfo: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  resolutionPhotoContainer: {
+    marginTop: 12,
+  },
+  resolutionPhoto: {
+    width: '100%',
+    height: 200,
+    borderRadius: 12,
+    marginTop: 8,
+    backgroundColor: '#e0e0e0',
+  },
   footer: {
     padding: 16,
     borderTopWidth: 1,
@@ -389,6 +554,10 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
     borderRadius: 12,
     alignItems: 'center',
+    marginBottom: 8,
+  },
+  resolveButton: {
+    backgroundColor: '#34C759',
   },
   actionButtonDisabled: {
     opacity: 0.6,

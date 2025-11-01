@@ -23,10 +23,12 @@ export interface Confirmation {
 
 export interface ResolutionEvidence {
   photoUrl: string;
-  resolvedBy: string; // user ID
-  resolvedByName: string;
+  resolvedBy: {
+    userId: string;
+    userName: string;
+  };
   timestamp: Timestamp;
-  approvals: string[]; // user IDs who approved
+  approvals?: string[]; // user IDs who approved (optional for MVP)
 }
 
 export interface Report {

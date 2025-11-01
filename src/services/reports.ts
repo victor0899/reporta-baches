@@ -208,3 +208,43 @@ export const getAllReports = async (): Promise<Report[]> => {
     return [];
   }
 };
+
+/**
+ * Mark a report as resolved
+ */
+export const markReportResolved = async (
+  reportId: string,
+  userId: string,
+  userName: string,
+  photoUri: string
+): Promise<void> => {
+  try {
+    const reportRef = doc(db, 'reports', reportId);
+    const reportDoc = await getDoc(reportRef);
+
+    if (!reportDoc.exists()) {
+      throw new Error('Reporte no encontrado');
+    }
+
+    // Upload resolution photo
+    const photoUrl = await uploadPhoto(photoUri, reportId);
+
+    // Update report status to resolved
+    await updateDoc(reportRef, {
+      status: 'resolved',
+      resolvedAt: serverTimestamp(),
+      resolutionEvidence: {
+        photoUrl,
+        resolvedBy: {
+          userId,
+          userName,
+        },
+        timestamp: Timestamp.now(),
+      },
+      updatedAt: serverTimestamp(),
+    });
+  } catch (error) {
+    console.error('Error marking report as resolved:', error);
+    throw new Error('No se pudo marcar el reporte como resuelto');
+  }
+};
