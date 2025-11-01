@@ -9,9 +9,15 @@ import {
 } from 'react-native';
 import MapView, { PROVIDER_GOOGLE, Region } from 'react-native-maps';
 import * as Location from 'expo-location';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { MainStackParamList } from '../types/navigation';
 import { DEFAULT_LOCATION } from '../constants';
 
+type NavigationProp = NativeStackNavigationProp<MainStackParamList>;
+
 export const MapScreen: React.FC = () => {
+  const navigation = useNavigation<NavigationProp>();
   const [region, setRegion] = useState<Region>({
     latitude: DEFAULT_LOCATION.latitude,
     longitude: DEFAULT_LOCATION.longitude,
@@ -120,10 +126,7 @@ export const MapScreen: React.FC = () => {
       {/* New Report button */}
       <TouchableOpacity
         style={styles.newReportButton}
-        onPress={() => {
-          // TODO: Navigate to new report screen
-          Alert.alert('Nuevo Reporte', 'Funcionalidad próximamente');
-        }}
+        onPress={() => navigation.navigate('NewReport')}
       >
         <Text style={styles.newReportButtonText}>+ Nuevo Reporte</Text>
       </TouchableOpacity>

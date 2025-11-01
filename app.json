@@ -24,7 +24,9 @@
       "supportsTablet": true,
       "infoPlist": {
         "NSLocationWhenInUseUsageDescription": "La app necesita tu ubicación para mostrar reportes cercanos y permitirte crear nuevos reportes.",
-        "NSLocationAlwaysUsageDescription": "La app necesita tu ubicación para mostrar reportes cercanos y permitirte crear nuevos reportes."
+        "NSLocationAlwaysUsageDescription": "La app necesita tu ubicación para mostrar reportes cercanos y permitirte crear nuevos reportes.",
+        "NSCameraUsageDescription": "La app necesita acceso a la cámara para tomar fotos de los problemas que reportes.",
+        "NSPhotoLibraryUsageDescription": "La app necesita acceso a tus fotos para que puedas seleccionar imágenes de los problemas."
       }
     },
     "android": {
@@ -36,7 +38,10 @@
       "predictiveBackGestureEnabled": false,
       "permissions": [
         "ACCESS_COARSE_LOCATION",
-        "ACCESS_FINE_LOCATION"
+        "ACCESS_FINE_LOCATION",
+        "CAMERA",
+        "READ_EXTERNAL_STORAGE",
+        "WRITE_EXTERNAL_STORAGE"
       ],
       "config": {
         "googleMaps": {

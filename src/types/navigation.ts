@@ -10,6 +10,7 @@ export type AuthStackParamList = {
 // Main App Stack
 export type MainStackParamList = {
   MainTabs: NavigatorScreenParams<MainTabParamList>;
+  NewReport: undefined;
 };
 
 // Bottom Tabs

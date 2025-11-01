@@ -3,3 +3,4 @@ export * from './LoginScreen';
 export * from './RegisterScreen';
 export * from './MapScreen';
 export * from './ProfileScreen';
+export * from './NewReportScreen';
