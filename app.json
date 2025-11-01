@@ -12,8 +12,20 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
+    "plugins": [
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "La app necesita tu ubicación para mostrar reportes cercanos y permitirte crear nuevos reportes."
+        }
+      ]
+    ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "La app necesita tu ubicación para mostrar reportes cercanos y permitirte crear nuevos reportes.",
+        "NSLocationAlwaysUsageDescription": "La app necesita tu ubicación para mostrar reportes cercanos y permitirte crear nuevos reportes."
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -21,7 +33,16 @@
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "permissions": [
+        "ACCESS_COARSE_LOCATION",
+        "ACCESS_FINE_LOCATION"
+      ],
+      "config": {
+        "googleMaps": {
+          "apiKey": ""
+        }
+      }
     },
     "web": {
       "favicon": "./assets/favicon.png"

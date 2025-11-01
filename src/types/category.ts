@@ -4,9 +4,8 @@ export type CategoryType =
   | 'alcantarillado'
   | 'basura'
   | 'arboles'
-  | 'alumbrado_publico'
-  | 'propiedades_abandonadas'
-  | 'servicios_electricos'
+  | 'infraestructura_electrica'
+  | 'propiedades_peligrosas'
   | 'otro';
 
 export interface Category {

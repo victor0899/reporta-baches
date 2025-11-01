@@ -10,13 +10,13 @@ export const CATEGORIES: Category[] = [
   {
     id: 'infraestructura',
     name: 'Infraestructura',
-    description: 'Banquetas rotas, puentes dañados',
+    description: 'Banquetas rotas, puentes peatonales dañados',
     icon: '🚧',
   },
   {
     id: 'alcantarillado',
     name: 'Alcantarillado',
-    description: 'Tapas faltantes, drenajes obstruidos',
+    description: 'Tapas faltantes, drenajes obstruidos, fugas de agua',
     icon: '🔴',
   },
   {
@@ -32,22 +32,16 @@ export const CATEGORIES: Category[] = [
     icon: '🌳',
   },
   {
-    id: 'alumbrado_publico',
-    name: 'Alumbrado Público',
-    description: 'Postes dañados, luces fundidas',
-    icon: '💡',
+    id: 'infraestructura_electrica',
+    name: 'Infraestructura Eléctrica',
+    description: 'Postes dañados, luces fundidas, cables peligrosos',
+    icon: '💡⚡',
   },
   {
-    id: 'propiedades_abandonadas',
-    name: 'Propiedades Abandonadas',
-    description: 'Edificios en mal estado',
-    icon: '🏚️',
-  },
-  {
-    id: 'servicios_electricos',
-    name: 'Servicios Eléctricos',
-    description: 'Cables caídos, transformadores dañados',
-    icon: '⚡',
+    id: 'propiedades_peligrosas',
+    name: 'Propiedades Peligrosas',
+    description: 'Tejas, muros u otros elementos que se pueden caer y representan un riesgo',
+    icon: '🏚️⚠️',
   },
   {
     id: 'otro',
