@@ -2,16 +2,26 @@ import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { MainTabParamList } from '../types/navigation';
 import { MapScreen, ProfileScreen } from '../screens';
+import { useTheme } from '../contexts';
 
 const Tab = createBottomTabNavigator<MainTabParamList>();
 
 export const MainTabs: React.FC = () => {
+  const { colors } = useTheme();
+
   return (
     <Tab.Navigator
       screenOptions={{
         headerShown: true,
-        tabBarActiveTintColor: '#007AFF',
-        tabBarInactiveTintColor: '#999',
+        headerStyle: {
+          backgroundColor: colors.background,
+        },
+        headerTintColor: colors.text,
+        tabBarStyle: {
+          backgroundColor: colors.tabBarBackground,
+        },
+        tabBarActiveTintColor: colors.tabBarActive,
+        tabBarInactiveTintColor: colors.tabBarInactive,
       }}
     >
       <Tab.Screen
