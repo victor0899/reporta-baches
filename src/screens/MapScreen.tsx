@@ -13,6 +13,7 @@ import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { MainStackParamList } from '../types/navigation';
 import { DEFAULT_LOCATION, getCategoryById } from '../constants';
+import { darkMapStyle, lightMapStyle } from '../constants/mapStyles';
 import { useReports } from '../hooks/useReports';
 import { ReportDetailModal } from '../components/ReportDetailModal';
 import { Report } from '../types';
@@ -129,7 +130,7 @@ export const MapScreen: React.FC = () => {
         onRegionChangeComplete={setRegion}
         showsUserLocation={hasLocationPermission}
         showsMyLocationButton={false}
-        userInterfaceStyle={isDark ? 'dark' : 'light'}
+        customMapStyle={isDark ? darkMapStyle : lightMapStyle}
       >
         {/* Report Markers */}
         {reports.map((report) => {
