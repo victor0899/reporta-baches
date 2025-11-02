@@ -64,17 +64,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     // Update profile with name
     await updateProfile(userCredential.user, { displayName: name });
 
-    // Create user document in Firestore
+    // Create user document in Firestore (without photoUrl initially)
     const newUser: User = {
       id: userCredential.user.uid,
       name,
       email,
-      photoUrl: userCredential.user.photoURL || undefined,
       isVerified: false,
       createdAt: new Date() as any,
       reportsCreated: [],
       reportsConfirmed: [],
     };
+
+    // Only add photoUrl if it exists (e.g., Google/Apple sign-in)
+    if (userCredential.user.photoURL) {
+      newUser.photoUrl = userCredential.user.photoURL;
+    }
 
     await setDoc(doc(db, 'users', userCredential.user.uid), newUser);
     setUserData(newUser);
