@@ -16,13 +16,14 @@ import * as Location from 'expo-location';
 import { MainStackParamList } from '../types/navigation';
 import { CategoryType } from '../types';
 import { CATEGORIES } from '../constants';
-import { useAuth } from '../contexts';
+import { useAuth, useTheme } from '../contexts';
 import { createReport, checkForDuplicates } from '../services/reports';
 
 type Props = NativeStackScreenProps<MainStackParamList, 'NewReport'>;
 
 export const NewReportScreen: React.FC<Props> = ({ navigation }) => {
   const { user, isGuest } = useAuth();
+  const { colors } = useTheme();
   const [photoUri, setPhotoUri] = useState<string | null>(null);
   const [category, setCategory] = useState<CategoryType | null>(null);
   const [description, setDescription] = useState('');
@@ -215,6 +216,8 @@ export const NewReportScreen: React.FC<Props> = ({ navigation }) => {
     }
   };
 
+  const styles = getStyles(colors);
+
   return (
     <KeyboardAwareScrollView
       style={styles.container}
@@ -286,6 +289,7 @@ export const NewReportScreen: React.FC<Props> = ({ navigation }) => {
           <TextInput
             style={styles.textInput}
             placeholder="Describe el problema..."
+            placeholderTextColor={colors.inputPlaceholder}
             value={description}
             onChangeText={setDescription}
             multiline
@@ -302,6 +306,7 @@ export const NewReportScreen: React.FC<Props> = ({ navigation }) => {
           <TextInput
             style={styles.textInput}
             placeholder="Ej: Frente a la iglesia..."
+            placeholderTextColor={colors.inputPlaceholder}
             value={address}
             onChangeText={setAddress}
           />
@@ -323,10 +328,10 @@ export const NewReportScreen: React.FC<Props> = ({ navigation }) => {
   );
 };
 
-const styles = StyleSheet.create({
+const getStyles = (colors: any) => StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: colors.background,
   },
   content: {
     padding: 20,
@@ -338,11 +343,11 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#333',
+    color: colors.text,
     marginBottom: 12,
   },
   required: {
-    color: '#FF3B30',
+    color: colors.error,
   },
   photoContainer: {
     alignItems: 'center',
@@ -356,11 +361,11 @@ const styles = StyleSheet.create({
   changePhotoButton: {
     paddingHorizontal: 20,
     paddingVertical: 10,
-    backgroundColor: '#f0f0f0',
+    backgroundColor: colors.backgroundTertiary,
     borderRadius: 8,
   },
   changePhotoText: {
-    color: '#007AFF',
+    color: colors.primary,
     fontWeight: '600',
   },
   photoButtons: {
@@ -369,7 +374,7 @@ const styles = StyleSheet.create({
   },
   photoButton: {
     flex: 1,
-    backgroundColor: '#007AFF',
+    backgroundColor: colors.primary,
     paddingVertical: 40,
     borderRadius: 12,
     alignItems: 'center',
@@ -391,7 +396,7 @@ const styles = StyleSheet.create({
   categoryButton: {
     width: '30%',
     aspectRatio: 1,
-    backgroundColor: '#f0f0f0',
+    backgroundColor: colors.backgroundTertiary,
     borderRadius: 12,
     alignItems: 'center',
     justifyContent: 'center',
@@ -399,8 +404,8 @@ const styles = StyleSheet.create({
     borderColor: 'transparent',
   },
   categoryButtonSelected: {
-    backgroundColor: '#E3F2FF',
-    borderColor: '#007AFF',
+    backgroundColor: colors.primaryLight,
+    borderColor: colors.primary,
   },
   categoryIcon: {
     fontSize: 32,
@@ -408,20 +413,21 @@ const styles = StyleSheet.create({
   },
   categoryName: {
     fontSize: 11,
-    color: '#333',
+    color: colors.text,
     textAlign: 'center',
     paddingHorizontal: 4,
   },
   textInput: {
     borderWidth: 1,
-    borderColor: '#ddd',
+    borderColor: colors.inputBorder,
     borderRadius: 8,
     padding: 12,
     fontSize: 16,
-    backgroundColor: '#fff',
+    backgroundColor: colors.inputBackground,
+    color: colors.text,
   },
   submitButton: {
-    backgroundColor: '#007AFF',
+    backgroundColor: colors.primary,
     paddingVertical: 16,
     borderRadius: 12,
     alignItems: 'center',

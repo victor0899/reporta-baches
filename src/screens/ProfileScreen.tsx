@@ -9,7 +9,7 @@ import {
   ActivityIndicator,
   Image,
 } from 'react-native';
-import { useAuth } from '../contexts';
+import { useAuth, useTheme } from '../contexts';
 import { getReportsByIds } from '../services/reports';
 import { Report } from '../types';
 import { getCategoryById } from '../constants';
@@ -17,6 +17,7 @@ import { ReportDetailModal } from '../components';
 
 export const ProfileScreen: React.FC = () => {
   const { user, userData, signOut, isGuest } = useAuth();
+  const { colors } = useTheme();
   const [createdReports, setCreatedReports] = useState<Report[]>([]);
   const [confirmedReports, setConfirmedReports] = useState<Report[]>([]);
   const [loading, setLoading] = useState(false);
@@ -122,6 +123,8 @@ export const ProfileScreen: React.FC = () => {
     );
   };
 
+  const styles = getStyles(colors);
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -219,15 +222,15 @@ export const ProfileScreen: React.FC = () => {
   );
 };
 
-const styles = StyleSheet.create({
+const getStyles = (colors: any) => StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: colors.background,
   },
   header: {
     padding: 20,
     paddingTop: 60,
-    backgroundColor: '#007AFF',
+    backgroundColor: colors.primary,
   },
   title: {
     fontSize: 28,
@@ -245,16 +248,16 @@ const styles = StyleSheet.create({
   name: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#333',
+    color: colors.text,
     marginTop: 20,
   },
   email: {
     fontSize: 16,
-    color: '#666',
+    color: colors.textSecondary,
     marginTop: 5,
   },
   badge: {
-    backgroundColor: '#34C759',
+    backgroundColor: colors.success,
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 16,
@@ -276,11 +279,11 @@ const styles = StyleSheet.create({
   statNumber: {
     fontSize: 32,
     fontWeight: 'bold',
-    color: '#007AFF',
+    color: colors.primary,
   },
   statLabel: {
     fontSize: 14,
-    color: '#666',
+    color: colors.textSecondary,
     marginTop: 5,
   },
   reportsSection: {
@@ -290,12 +293,12 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 18,
     fontWeight: '700',
-    color: '#333',
+    color: colors.text,
     marginBottom: 16,
   },
   reportItem: {
     flexDirection: 'row',
-    backgroundColor: '#f8f8f8',
+    backgroundColor: colors.surface,
     borderRadius: 12,
     marginBottom: 12,
     overflow: 'hidden',
@@ -303,7 +306,7 @@ const styles = StyleSheet.create({
   reportImage: {
     width: 100,
     height: 100,
-    backgroundColor: '#e0e0e0',
+    backgroundColor: colors.backgroundTertiary,
   },
   reportInfo: {
     flex: 1,
@@ -321,11 +324,11 @@ const styles = StyleSheet.create({
   reportCategory: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#333',
+    color: colors.text,
   },
   reportDate: {
     fontSize: 12,
-    color: '#666',
+    color: colors.textSecondary,
     marginTop: 4,
   },
   statusBadge: {
@@ -333,14 +336,14 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 4,
     borderRadius: 8,
-    backgroundColor: '#FFA500',
+    backgroundColor: colors.warning,
     marginTop: 4,
   },
   statusResolved: {
-    backgroundColor: '#34C759',
+    backgroundColor: colors.success,
   },
   statusInProgress: {
-    backgroundColor: '#007AFF',
+    backgroundColor: colors.info,
   },
   statusText: {
     color: '#fff',
@@ -352,19 +355,19 @@ const styles = StyleSheet.create({
   },
   emptyText: {
     fontSize: 14,
-    color: '#999',
+    color: colors.textTertiary,
     textAlign: 'center',
     marginVertical: 20,
   },
   guestText: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#333',
+    color: colors.text,
     marginTop: 40,
   },
   guestSubtext: {
     fontSize: 16,
-    color: '#666',
+    color: colors.textSecondary,
     marginTop: 10,
     textAlign: 'center',
   },
@@ -373,12 +376,12 @@ const styles = StyleSheet.create({
     padding: 16,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: '#FF3B30',
+    borderColor: colors.error,
     width: '100%',
     alignItems: 'center',
   },
   signOutText: {
-    color: '#FF3B30',
+    color: colors.error,
     fontSize: 16,
     fontWeight: '600',
   },

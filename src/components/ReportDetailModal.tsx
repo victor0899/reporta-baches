@@ -14,7 +14,7 @@ import {
 import * as ImagePicker from 'expo-image-picker';
 import { Report } from '../types';
 import { getCategoryById } from '../constants';
-import { useAuth } from '../contexts';
+import { useAuth, useTheme } from '../contexts';
 import { confirmReport, markReportResolved } from '../services/reports';
 
 interface Props {
@@ -27,12 +27,14 @@ const { width } = Dimensions.get('window');
 
 export const ReportDetailModal: React.FC<Props> = ({ report, visible, onClose }) => {
   const { user, isGuest } = useAuth();
+  const { colors } = useTheme();
   const [loading, setLoading] = useState(false);
 
   if (!report) return null;
 
   const category = getCategoryById(report.category);
   const createdDate = report.createdAt?.toDate?.();
+  const styles = getStyles(colors);
 
   const handleConfirm = async () => {
     // Check if user is logged in
@@ -390,14 +392,14 @@ export const ReportDetailModal: React.FC<Props> = ({ report, visible, onClose })
   );
 };
 
-const styles = StyleSheet.create({
+const getStyles = (colors: any) => StyleSheet.create({
   overlay: {
     flex: 1,
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
     justifyContent: 'flex-end',
   },
   container: {
-    backgroundColor: '#fff',
+    backgroundColor: colors.background,
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
     maxHeight: '90%',
@@ -408,12 +410,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 16,
     borderBottomWidth: 1,
-    borderBottomColor: '#f0f0f0',
+    borderBottomColor: colors.separator,
   },
   categoryBadge: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#f0f0f0',
+    backgroundColor: colors.backgroundTertiary,
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 16,
@@ -425,24 +427,24 @@ const styles = StyleSheet.create({
   categoryName: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#333',
+    color: colors.text,
   },
   closeButton: {
     width: 32,
     height: 32,
     borderRadius: 16,
-    backgroundColor: '#f0f0f0',
+    backgroundColor: colors.backgroundTertiary,
     alignItems: 'center',
     justifyContent: 'center',
   },
   closeButtonText: {
     fontSize: 20,
-    color: '#666',
+    color: colors.textSecondary,
   },
   photo: {
     width: width,
     height: width * 0.75,
-    backgroundColor: '#f0f0f0',
+    backgroundColor: colors.backgroundTertiary,
   },
   content: {
     padding: 16,
@@ -455,25 +457,25 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: 14,
-    color: '#666',
+    color: colors.textSecondary,
     fontWeight: '500',
   },
   value: {
     fontSize: 14,
-    color: '#333',
+    color: colors.text,
     fontWeight: '600',
   },
   statusBadge: {
     paddingHorizontal: 12,
     paddingVertical: 4,
     borderRadius: 12,
-    backgroundColor: '#FFA500',
+    backgroundColor: colors.warning,
   },
   statusResolved: {
-    backgroundColor: '#34C759',
+    backgroundColor: colors.success,
   },
   statusInProgress: {
-    backgroundColor: '#007AFF',
+    backgroundColor: colors.info,
   },
   statusText: {
     color: '#fff',
@@ -485,14 +487,14 @@ const styles = StyleSheet.create({
   },
   description: {
     fontSize: 14,
-    color: '#333',
+    color: colors.text,
     marginTop: 8,
     lineHeight: 20,
   },
   confirmationItem: {
     marginTop: 12,
     padding: 12,
-    backgroundColor: '#f8f8f8',
+    backgroundColor: colors.surface,
     borderRadius: 8,
   },
   confirmationHeader: {
@@ -503,21 +505,21 @@ const styles = StyleSheet.create({
   confirmationName: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#333',
+    color: colors.text,
   },
   confirmationDate: {
     fontSize: 12,
-    color: '#666',
+    color: colors.textSecondary,
   },
   confirmationPhoto: {
     width: '100%',
     height: 150,
     borderRadius: 8,
     marginTop: 8,
-    backgroundColor: '#e0e0e0',
+    backgroundColor: colors.backgroundTertiary,
   },
   resolvedBanner: {
-    backgroundColor: '#34C759',
+    backgroundColor: colors.success,
     padding: 16,
     borderRadius: 12,
     alignItems: 'center',
@@ -542,22 +544,22 @@ const styles = StyleSheet.create({
     height: 200,
     borderRadius: 12,
     marginTop: 8,
-    backgroundColor: '#e0e0e0',
+    backgroundColor: colors.backgroundTertiary,
   },
   footer: {
     padding: 16,
     borderTopWidth: 1,
-    borderTopColor: '#f0f0f0',
+    borderTopColor: colors.separator,
   },
   actionButton: {
-    backgroundColor: '#007AFF',
+    backgroundColor: colors.primary,
     paddingVertical: 14,
     borderRadius: 12,
     alignItems: 'center',
     marginBottom: 8,
   },
   resolveButton: {
-    backgroundColor: '#34C759',
+    backgroundColor: colors.success,
   },
   actionButtonDisabled: {
     opacity: 0.6,

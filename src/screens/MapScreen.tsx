@@ -16,11 +16,13 @@ import { DEFAULT_LOCATION, getCategoryById } from '../constants';
 import { useReports } from '../hooks/useReports';
 import { ReportDetailModal } from '../components/ReportDetailModal';
 import { Report } from '../types';
+import { useTheme } from '../contexts';
 
 type NavigationProp = NativeStackNavigationProp<MainStackParamList>;
 
 export const MapScreen: React.FC = () => {
   const navigation = useNavigation<NavigationProp>();
+  const { colors, isDark } = useTheme();
   const { reports, loading: reportsLoading } = useReports();
   const [region, setRegion] = useState<Region>({
     latitude: DEFAULT_LOCATION.latitude,
@@ -107,10 +109,12 @@ export const MapScreen: React.FC = () => {
     }
   };
 
+  const styles = getStyles(colors);
+
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#007AFF" />
+        <ActivityIndicator size="large" color={colors.primary} />
         <Text style={styles.loadingText}>Cargando mapa...</Text>
       </View>
     );
@@ -125,6 +129,7 @@ export const MapScreen: React.FC = () => {
         onRegionChangeComplete={setRegion}
         showsUserLocation={hasLocationPermission}
         showsMyLocationButton={false}
+        userInterfaceStyle={isDark ? 'dark' : 'light'}
       >
         {/* Report Markers */}
         {reports.map((report) => {
@@ -176,7 +181,7 @@ export const MapScreen: React.FC = () => {
   );
 };
 
-const styles = StyleSheet.create({
+const getStyles = (colors: any) => StyleSheet.create({
   container: {
     flex: 1,
   },
@@ -184,12 +189,12 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#fff',
+    backgroundColor: colors.background,
   },
   loadingText: {
     marginTop: 10,
     fontSize: 16,
-    color: '#666',
+    color: colors.textSecondary,
   },
   map: {
     flex: 1,
@@ -198,7 +203,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 60,
     right: 20,
-    backgroundColor: '#fff',
+    backgroundColor: colors.card,
     width: 50,
     height: 50,
     borderRadius: 25,
@@ -218,7 +223,7 @@ const styles = StyleSheet.create({
     bottom: 30,
     left: 20,
     right: 20,
-    backgroundColor: '#007AFF',
+    backgroundColor: colors.primary,
     paddingVertical: 16,
     borderRadius: 12,
     alignItems: 'center',
@@ -234,11 +239,11 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   markerContainer: {
-    backgroundColor: '#fff',
+    backgroundColor: colors.card,
     padding: 6,
     borderRadius: 20,
     borderWidth: 2,
-    borderColor: '#007AFF',
+    borderColor: colors.primary,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,

@@ -12,12 +12,13 @@ import {
 } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { AuthStackParamList } from '../types/navigation';
-import { useAuth } from '../contexts';
+import { useAuth, useTheme } from '../contexts';
 
 type Props = NativeStackScreenProps<AuthStackParamList, 'Login'>;
 
 export const LoginScreen: React.FC<Props> = ({ navigation }) => {
   const { signIn } = useAuth();
+  const { colors } = useTheme();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -39,6 +40,8 @@ export const LoginScreen: React.FC<Props> = ({ navigation }) => {
     }
   };
 
+  const styles = getStyles(colors);
+
   return (
     <KeyboardAvoidingView
       style={styles.container}
@@ -50,6 +53,7 @@ export const LoginScreen: React.FC<Props> = ({ navigation }) => {
         <TextInput
           style={styles.input}
           placeholder="Correo electrónico"
+          placeholderTextColor={colors.inputPlaceholder}
           value={email}
           onChangeText={setEmail}
           autoCapitalize="none"
@@ -60,6 +64,7 @@ export const LoginScreen: React.FC<Props> = ({ navigation }) => {
         <TextInput
           style={styles.input}
           placeholder="Contraseña"
+          placeholderTextColor={colors.inputPlaceholder}
           value={password}
           onChangeText={setPassword}
           secureTextEntry
@@ -90,10 +95,10 @@ export const LoginScreen: React.FC<Props> = ({ navigation }) => {
   );
 };
 
-const styles = StyleSheet.create({
+const getStyles = (colors: any) => StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: colors.background,
   },
   content: {
     flex: 1,
@@ -103,21 +108,22 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 28,
     fontWeight: 'bold',
-    color: '#333',
+    color: colors.text,
     marginBottom: 30,
     textAlign: 'center',
   },
   input: {
     borderWidth: 1,
-    borderColor: '#ddd',
+    borderColor: colors.inputBorder,
     borderRadius: 8,
     padding: 16,
     fontSize: 16,
     marginBottom: 16,
-    backgroundColor: '#fff',
+    backgroundColor: colors.inputBackground,
+    color: colors.text,
   },
   button: {
-    backgroundColor: '#007AFF',
+    backgroundColor: colors.primary,
     padding: 16,
     borderRadius: 8,
     alignItems: 'center',
@@ -136,7 +142,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   linkText: {
-    color: '#007AFF',
+    color: colors.primary,
     fontSize: 14,
   },
 });
