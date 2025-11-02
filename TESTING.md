@@ -655,7 +655,30 @@
 
 ## 🐛 Issues Encontrados
 
-### Issue #1
+### Issue #1 - photoUrl undefined en registro
+**Severidad:** 🟡 Media (no bloquea el registro, pero muestra error)
+**Test relacionado:** Test 1.1 - Registro de nuevo usuario
+**Descripción:** Al registrarse con email/password, Firestore arroja error porque el campo `photoUrl` tiene valor `undefined`
+**Pasos para reproducir:**
+1. Registrarse con email/password
+2. El usuario se crea correctamente en Firebase Auth
+3. Al intentar guardar el documento en Firestore muestra error
+
+**Comportamiento esperado:** El registro se completa sin errores
+**Comportamiento actual:** Muestra Alert de error: `Unsupported field value: undefined (found in field photoUrl in document users/...)`
+**Screenshot/logs:**
+```
+Error: Function setDoc() called with invalid data.
+Unsupported field value: undefined
+(found in field photoUrl in document users/NL0CWPAi8pgYZd7jnQ451MP6Qj63)
+```
+**Causa raíz:** El código asignaba `photoUrl: userCredential.user.photoURL || undefined`, pero Firestore no permite valores `undefined`
+**Solución implementada:** Solo incluir el campo `photoUrl` si existe (no incluir el campo si es null/undefined)
+**Estado:** ✅ Resuelto (commit: cb20201)
+
+---
+
+### Issue #2 (Template)
 **Severidad:** 🔴 Alta / 🟡 Media / 🟢 Baja
 **Test relacionado:**
 **Descripción:**
@@ -675,9 +698,11 @@
 - Tests totales: 7 grupos principales
 - Tests pasados: 0
 - Tests fallidos: 0
-- Tests pendientes: 7
+- Tests en progreso: 1 (Test 1.1)
+- Tests pendientes: 6
 - Issues críticos: 0
-- Issues menores: 0
+- Issues resueltos: 1
+- Issues pendientes: 0
 
 ### Recomendaciones
 ```
