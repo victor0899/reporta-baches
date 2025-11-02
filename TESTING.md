@@ -10,7 +10,7 @@
 
 | Test | Estado | Fecha | Notas |
 |------|--------|-------|-------|
-| Test 1: Autenticación | ⏳ Pendiente | - | - |
+| Test 1: Autenticación | 🔄 En progreso | 2025-01-11 | Test 1.1 ✅ completado |
 | Test 2: Crear Reportes | ⏳ Pendiente | - | - |
 | Test 3: Detección Duplicados | ⏳ Pendiente | - | - |
 | Test 4: Confirmar Reportes | ⏳ Pendiente | - | - |
@@ -40,18 +40,21 @@
 6. Click en "Registrarse"
 
 **Criterios de éxito:**
-- [ ] El registro se completa sin errores
-- [ ] Se navega automáticamente al mapa principal
-- [ ] El usuario aparece autenticado
+- [x] El registro se completa sin errores
+- [x] Se navega automáticamente al mapa principal
+- [x] El usuario aparece autenticado
 
-**Estado:** ⏳ Pendiente
+**Estado:** ✅ Completado (2025-01-11)
 **Resultado:**
 ```
-[Aquí se agregarán los resultados]
+- Registro completado exitosamente
+- Navegación al mapa funcionó correctamente
+- Issue #1 (photoUrl undefined) fue encontrado y resuelto
+- Tras el fix, el registro funciona sin errores
 ```
 
 **Issues encontrados:**
-- Ninguno
+- Issue #1: photoUrl undefined (✅ Resuelto)
 
 ---
 
@@ -65,15 +68,19 @@
 6. Ingresar contraseña: `Test123456`
 
 **Criterios de éxito:**
-- [ ] La sesión se cierra correctamente
-- [ ] Se vuelve a la pantalla de bienvenida
-- [ ] El login funciona con las credenciales correctas
-- [ ] Los datos del usuario persisten (nombre, email)
+- [x] La sesión se cierra correctamente
+- [x] Se vuelve a la pantalla de bienvenida
+- [x] El login funciona con las credenciales correctas
+- [x] Los datos del usuario persisten (nombre, email)
 
-**Estado:** ⏳ Pendiente
+**Estado:** ✅ Completado (2025-01-11)
 **Resultado:**
 ```
-[Aquí se agregarán los resultados]
+- Cerrar sesión funcionó correctamente
+- Navegación a pantalla de bienvenida exitosa
+- Login con credenciales guardadas funcionó
+- Datos del usuario persistieron correctamente (nombre, email)
+- Todo el flujo funcionó sin errores
 ```
 
 **Issues encontrados:**

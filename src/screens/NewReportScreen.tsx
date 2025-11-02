@@ -6,10 +6,10 @@ import {
   TouchableOpacity,
   Image,
   TextInput,
-  ScrollView,
   Alert,
   ActivityIndicator,
 } from 'react-native';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import * as ImagePicker from 'expo-image-picker';
 import * as Location from 'expo-location';
@@ -216,8 +216,14 @@ export const NewReportScreen: React.FC<Props> = ({ navigation }) => {
   };
 
   return (
-    <ScrollView style={styles.container}>
-      <View style={styles.content}>
+    <KeyboardAwareScrollView
+      style={styles.container}
+      contentContainerStyle={styles.content}
+      enableOnAndroid={true}
+      enableAutomaticScroll={true}
+      extraScrollHeight={20}
+      keyboardShouldPersistTaps="handled"
+    >
         {/* Photo Section */}
         <View style={styles.photoSection}>
           <Text style={styles.sectionTitle}>
@@ -313,8 +319,7 @@ export const NewReportScreen: React.FC<Props> = ({ navigation }) => {
             <Text style={styles.submitButtonText}>Crear Reporte</Text>
           )}
         </TouchableOpacity>
-      </View>
-    </ScrollView>
+    </KeyboardAwareScrollView>
   );
 };
 
@@ -325,6 +330,7 @@ const styles = StyleSheet.create({
   },
   content: {
     padding: 20,
+    paddingBottom: 40,
   },
   photoSection: {
     marginBottom: 24,
